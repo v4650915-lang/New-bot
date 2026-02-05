@@ -1,0 +1,44 @@
+/* Базовые стили для приложения */
+/* Основные стили уже встроены в index.html через Tailwind CDN и inline styles */
+
+/* Мобильная адаптация */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Улучшение скролла на мобильных устройствах */
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Touch-friendly элементы */
+button,
+[role="button"],
+a {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 236, 0, 0.2);
+}
+
+/* Улучшение читаемости на маленьких экранах */
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+  
+  /* Увеличение области нажатия для мобильных */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Предотвращение масштабирования при двойном тапе на iOS */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: rgba(255, 236, 0, 0.2);
+  }
+}

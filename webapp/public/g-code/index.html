@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CNC G-Code Generator</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Welcome Screen / Machine Selection -->
+    <div id="welcomeScreen">
+        <canvas id="matrixCanvas"></canvas>
+        <div class="welcome-overlay"></div>
+        <div class="welcome-content container">
+            <!-- Info Button for Guide -->
+            <div class="text-end mb-2">
+                <button class="btn btn-outline-info btn-sm rounded-circle" data-bs-toggle="modal"
+                    data-bs-target="#guideModal" style="width: 40px; height: 40px;">
+                    <i class="bi bi-info-lg"></i>
+                </button>
+            </div>
+
+            <h1 class="text-center mb-5 metallic-text">CNC G-Code Generator</h1>
+
+            <h3 class="text-center mb-4 text-light" style="font-weight: 300; letter-spacing: 1px;">ВЫБЕРИТЕ СИСТЕМУ ЧПУ:
+            </h3>
+
+            <div class="row justify-content-center g-4">
+                <!-- Fanuc Card -->
+                <div class="col-6 col-md-3">
+                    <div class="machine-btn-wrapper">
+                        <button class="fanuc-btn" onclick="selectMachine('fanuc')">
+                            <span class="fanuc-text">FANUC</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Siemens Card -->
+                <div class="col-6 col-md-3">
+                    <div class="machine-btn-wrapper">
+                        <button class="siemens-btn" onclick="selectMachine('siemens')">
+                            <span class="siemens-text">SIEMENS</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- FMS Card -->
+                <div class="col-6 col-md-3">
+                    <div class="machine-btn-wrapper">
+                        <button class="fms-btn" onclick="selectMachine('fms')">
+                            <div class="fms-logo-content">
+                                <div class="fms-circle"></div>
+                                <div class="fms-text">FMS</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                <!-- Haas Card -->
+                <div class="col-6 col-md-3">
+                    <div class="machine-btn-wrapper">
+                        <button class="haas-btn" onclick="selectMachine('haas')">
+                            <div class="logo-icon-realistic">
+                                <div class="logo-inner-red">
+                                    <div class="logo-h-realistic"></div>
+                                </div>
+                            </div>
+                            <span class="haas-text">HAAS</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guide Modal (Moved outside to body level) -->
+    <div class="modal fade" id="guideModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-info"><i class="bi bi-info-circle"></i> Руководство пользователя</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body guide-content">
+                    <ol class="text-start m-0">
+                        <li>Выберите тип стойки ЧПУ (Fanuc, Siemens или FMS).</li>
+                        <li>Используйте меню для добавления операций (Точение, Канавка, Резьба).</li>
+                        <li>Код программы формируется автоматически в редакторе.</li>
+                        <li>Нажмите "Скопировать" или "Сохранить", чтобы получить готовый файл.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header & Toolbar -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="d-flex align-items-center gap-2">
+                <button onclick="goBack()" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-arrow-left"></i> Назад
+                </button>
+                <h5 class="m-0">CNC G-Code Generator</h5>
+            </div>
+            <div class="d-flex gap-2">
+                <button onclick="undo()" class="btn btn-outline-warning btn-sm" id="btnUndo" disabled>
+                    <i class="bi bi-arrow-counterclockwise"></i> Отмена
+                </button>
+                <button onclick="confirmReset()" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash"></i> Сброс
+                </button>
+            </div>
+        </div>
+
+        <!-- Code Editor -->
+        <div class="editor-wrapper">
+            <textarea id="codeOutput" spellcheck="false"></textarea>
+        </div>
+
+        <!-- Operations Panel -->
+        <div class="controls-area">
+            <div class="controls-grid">
+                <!-- Turning Operations -->
+                <div class="dropdown">
+                    <button class="op-btn btn-turning dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Точение
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark w-100">
+                        <li><button class="dropdown-item py-3" onclick="addTurning('external')">Наружное</button></li>
+                        <li><button class="dropdown-item py-3" onclick="addTurning('internal')">Внутреннее</button></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><button class="dropdown-item py-3" onclick="addFacing()">Торцевание</button></li>
+                    </ul>
+                </div>
+
+                <!-- Grooving Operations -->
+                <div class="dropdown">
+                    <button class="op-btn btn-grooving dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        Канавка
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark w-100">
+                        <li><button class="dropdown-item py-3" onclick="addGrooving('face')">Торцевая</button></li>
+                        <li><button class="dropdown-item py-3" onclick="addGrooving('external')">Наружная</button></li>
+                    </ul>
+                </div>
+
+                <!-- Threading -->
+                <button onclick="addThreading()" class="op-btn btn-threading">
+                    Резьба
+                </button>
+
+                <!-- Drilling (New) -->
+                <button onclick="addDrilling()" class="op-btn btn-drilling">
+                    Сверление
+                </button>
+
+                <!-- Cutoff (New) -->
+                <button onclick="addCutoff()" class="op-btn btn-cutoff full-width">
+                    Отрез
+                </button>
+            </div>
+
+            <div class="row g-2 mt-2 pt-2 border-top border-secondary">
+                <!-- Export Actions -->
+                <div class="col-6">
+                    <button onclick="copyCode()" class="btn btn-secondary btn-xl">
+                        Скопировать
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button onclick="saveFile()" class="btn btn-info btn-xl text-white">
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+
+</html>

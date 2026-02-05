@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFEC00" />
+    <meta name="description" content="ФАНУК Инженерный Комплекс - Профессиональный инструмент с поддержкой ИИ" />
+    <title>ФАНУК Инженерный Комплекс</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'fanuc-yellow': '#FFEC00',
+              'fanuc-dark': '#2A2A2A',
+              'fanuc-panel': '#E5E5E5',
+              'led-red': '#FF3333',
+              'led-green': '#33FF33',
+            },
+            fontFamily: {
+              'mono': ['"Share Tech Mono"', 'monospace'],
+              'sans': ['Roboto', 'sans-serif'],
+            },
+            boxShadow: {
+              'machine': '4px 4px 10px rgba(0,0,0,0.5), inset 1px 1px 2px rgba(255,255,255,0.3)',
+              'machine-inset': 'inset 4px 4px 10px rgba(0,0,0,0.6)',
+              'btn': '2px 2px 0px rgba(0,0,0,0.7), inset 1px 1px 0px rgba(255,255,255,0.4)',
+              'btn-pressed': 'inset 2px 2px 5px rgba(0,0,0,0.6)',
+            }
+          },
+        },
+      }
+    </script>
+    <style>
+      body {
+        background-color: #1a1a1a;
+        background-image: radial-gradient(#2a2a2a 15%, transparent 16%), radial-gradient(#2a2a2a 15%, transparent 16%);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+      }
+      /* Custom scrollbar for industrial feel */
+      ::-webkit-scrollbar {
+        width: 10px;
+        background: #2A2A2A;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #FFEC00;
+        border: 2px solid #2A2A2A;
+      }
+      
+      /* Texture patterns for dark panels */
+      .texture-dots {
+        background-image: 
+          radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0),
+          radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0),
+          radial-gradient(circle at 18px 18px, rgba(255,255,255,0.08) 1px, transparent 0);
+        background-size: 20px 20px, 20px 20px, 25px 25px;
+        background-position: 0 0, 0 0, 10px 10px;
+      }
+      
+      .texture-ripple {
+        background-image: 
+          radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0);
+        background-size: 18px 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

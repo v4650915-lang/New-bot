@@ -1,0 +1,517 @@
+:root {
+    --neon-green: #0f0;
+    --dark-bg: #000;
+    --metal-gradient: linear-gradient(145deg, #2c3e50, #4ca1af);
+    --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+body {
+    background-color: var(--dark-bg);
+    color: #fff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* Matrix Canvas */
+#matrixCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+}
+
+.welcome-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 20%, #000 90%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.welcome-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 5vh;
+}
+
+/* Metallic 3D Text */
+.metallic-text {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    color: #e0e0e0;
+    margin-bottom: 2rem;
+    letter-spacing: 4px;
+    
+    /* Sleek Metallic Gradient */
+    background: linear-gradient(180deg, #ffffff 0%, #b0b0b0 50%, #e0e0e0 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    
+    /* Clean Neon/Metal Glow */
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3))
+            drop-shadow(0 0 10px rgba(0, 255, 255, 0.2));
+            
+    /* Subtle text shadow for depth without "heaviness" */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Guide Box - Metal Theme (Hidden by default, shown in modal) */
+.guide-content {
+    color: #d1d5db;
+}
+.guide-content ol li {
+    margin-bottom: 10px;
+}
+
+/* --- MACHINE SELECTION BUTTONS (NEW) --- */
+
+/* Common base for machine buttons to ensure uniformity */
+.machine-btn-wrapper {
+    width: 100%;
+    height: 140px; /* Fixed height for uniformity */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- FANUC BUTTON --- */
+.fanuc-btn {
+    position: relative;
+    background-color: #FFE600; 
+    background: linear-gradient(to bottom, #fff04d 0%, #FFE600 30%, #f2d900 100%);
+    border: none;
+    border-radius: 4px;
+    padding: 15px 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #bfab00, 0 5px 10px rgba(0,0,0,0.3);
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 200px; /* Limit width */
+    max-height: 100px;
+}
+
+.fanuc-text {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+    font-weight: 900;
+    font-size: 2rem; /* Adjusted for card size */
+    color: #ED1C24; 
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.fanuc-btn:hover {
+    filter: brightness(1.1);
+    transform: translateY(-5px);
+    /* Neon Glow (Yellow/Gold) */
+    box-shadow: 
+        0 4px 0 #bfab00,
+        0 0 20px #FFE600,
+        0 0 40px #FFD700;
+}
+
+.fanuc-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 0 0 #bfab00, inset 0 2px 5px rgba(0,0,0,0.2);
+    background: #FFE600;
+}
+
+/* --- SIEMENS BUTTON --- */
+.siemens-btn {
+    position: relative;
+    background-color: #009999;
+    border: none;
+    border-radius: 4px;
+    padding: 14px 20px;
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    transition: all 0.2s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 100px;
+}
+
+.siemens-text {
+    font-family: 'Helvetica Neue', 'Helvetica', 'Arial Black', sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem; /* Adjusted */
+    color: #ffffff; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+}
+
+.siemens-btn:hover {
+    background-color: #00a8a8;
+    transform: translateY(-5px);
+    /* Neon Glow (Cyan/Teal) */
+    box-shadow: 
+        0 0 20px #00FFFF,
+        0 0 40px #00FFFF;
+}
+
+.siemens-btn:active {
+    background-color: #008f8f;
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* --- FMS BUTTON --- */
+.fms-btn {
+    position: relative;
+    background: white;
+    border: none;
+    border-radius: 14px;
+    padding: 15px 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 100px;
+}
+
+.fms-logo-content {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 45px; /* Scaled down */
+    min-height: 1.5em; 
+}
+
+.fms-circle {
+    position: absolute;
+    z-index: 1;
+    width: 1.85em; 
+    height: 1.85em;
+    background-color: #001F60; 
+    border-radius: 50%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.fms-text {
+    position: relative;
+    z-index: 2;
+    font-family: 'Arial Black', 'Impact', sans-serif;
+    font-weight: 900;
+    color: #ED1B24;
+    line-height: 1;
+    transform: skewX(-18deg) scaleX(1.3);
+    letter-spacing: -0.08em;
+    -webkit-text-stroke: 0.025em #ffffff;
+    paint-order: stroke fill;
+}
+
+.fms-btn:hover {
+    transform: translateY(-5px);
+    /* Neon Glow (Blue) */
+    box-shadow: 
+        0 0 20px #4488FF,
+        0 0 40px #4488FF;
+}
+
+.fms-btn:active {
+    transform: scale(0.97);
+}
+
+/* --- HAAS BUTTON --- */
+.haas-btn {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff, #e0e0e0);
+    border: 2px solid #C8102E;
+    border-radius: 8px;
+    padding: 12px 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    width: 100%;
+    height: 100%;
+    max-width: 200px;
+    max-height: 100px;
+    text-decoration: none;
+}
+
+.logo-icon-realistic {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 180deg at 50% 50%, #b0b0b0, #ffffff, #b0b0b0, #ffffff, #b0b0b0);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px;
+}
+
+.logo-inner-red {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #e43a59 0%, #C8102E 100%);
+    border-radius: 50%;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.logo-h-realistic {
+    position: absolute;
+    width: 85%;
+    height: 85%;
+    background: linear-gradient(115deg, #ffffff 0%, #d9d9d9 30%, #ffffff 50%, #b0b0b0 70%, #ffffff 100%);
+    clip-path: polygon(
+        20% 0%, 42% 0%, 33% 40%, 57% 40%, 66% 0%, 88% 0%, 
+        68% 100%, 46% 100%, 55% 60%, 31% 60%, 22% 100%, 0% 100%
+    );
+    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3));
+    transform: skewX(-10deg) translateX(2px);
+}
+
+.haas-text {
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    font-style: italic;
+    color: #C8102E;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
+
+.haas-btn:hover {
+    transform: translateY(-5px);
+    /* Neon Glow (Red) */
+    box-shadow: 
+        0 0 20px #FF0000,
+        0 0 40px #FF0000;
+}
+
+.haas-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* App Container */
+.app-container {
+    display: none; /* Hidden by default */
+    height: 100vh;
+    padding: 20px;
+    background: #111;
+    color: #fff;
+}
+
+/* Editor */
+.editor-wrapper {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 5px;
+    height: 60vh;
+    margin-bottom: 20px;
+    padding: 10px;
+}
+
+#codeOutput {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: #0f0;
+    font-family: 'Consolas', monospace;
+    font-size: 14px;
+    resize: none;
+    outline: none;
+}
+
+
+/* --- DYNAMIC THEME SYSTEM --- */
+
+/* Base Button Style for Operations */
+.op-btn {
+    width: 100%;
+    /* Uniform height logic handled by grid/flex, but let's enforce min-height */
+    min-height: 80px; 
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    display: flex; /* Centering */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    margin: 0; /* Grid handles spacing */
+}
+
+/* Hover Effect for all */
+.op-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.15);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+.op-btn:active {
+    transform: translateY(1px);
+    filter: brightness(0.95);
+}
+
+/* Grid Layout for Controls */
+.controls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.full-width {
+    grid-column: 1 / -1;
+}
+
+/* --- THEME: FANUC (Yellow/Red/Dark Grey) --- */
+.theme-fanuc .op-btn {
+    border: 2px solid #bfa000; /* Darker yellow border */
+}
+/* Turning - Primary Fanuc Yellow */
+.theme-fanuc .btn-turning {
+    background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+    color: #000; /* Black text on yellow */
+    text-shadow: none;
+    font-weight: 900;
+}
+/* Grooving - Orange (Warning) */
+.theme-fanuc .btn-grooving {
+    background: linear-gradient(135deg, #FF8C00 0%, #FF4500 100%);
+}
+/* Threading - Green (Standard) or maybe Red? Let's keep distinct */
+.theme-fanuc .btn-threading {
+    background: linear-gradient(135deg, #32cd32 0%, #228b22 100%);
+}
+/* Drilling - Blue */
+.theme-fanuc .btn-drilling {
+    background: linear-gradient(135deg, #1e90ff 0%, #00008b 100%);
+}
+/* Cutoff - Red */
+.theme-fanuc .btn-cutoff {
+    background: linear-gradient(135deg, #DC143C 0%, #8B0000 100%);
+}
+
+
+/* --- THEME: SIEMENS (Teal/Petrol/Grey) --- */
+.theme-siemens .op-btn {
+    border: 1px solid rgba(255,255,255,0.2);
+    font-family: 'Arial', sans-serif; /* Siemens look */
+}
+/* Turning - Siemens Petrol/Teal */
+.theme-siemens .btn-turning {
+    background: linear-gradient(135deg, #009999 0%, #006666 100%);
+}
+/* Grooving - Darker Grey/Blue */
+.theme-siemens .btn-grooving {
+    background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+}
+/* Threading - Light Blue/Cyan */
+.theme-siemens .btn-threading {
+    background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);
+    color: #000;
+    text-shadow: none;
+}
+/* Drilling - Purple/Deep Blue */
+.theme-siemens .btn-drilling {
+    background: linear-gradient(135deg, #8E2DE2 0%, #4A00E0 100%);
+}
+/* Cutoff - Red/Orange (Distinct) */
+.theme-siemens .btn-cutoff {
+    background: linear-gradient(135deg, #F2994A 0%, #F2C94C 100%);
+    color: #000;
+    text-shadow: none;
+}
+
+
+/* --- THEME: HAAS (Silver/Red/White) --- */
+.theme-haas .op-btn {
+    border: 1px solid #C8102E;
+    color: #000;
+    text-shadow: none;
+    font-weight: 800;
+}
+.theme-haas .btn-turning {
+    background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+    border-left: 10px solid #C8102E; /* Red strip */
+}
+.theme-haas .btn-grooving {
+    background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+    border-left: 10px solid #F0AD4E;
+}
+.theme-haas .btn-threading {
+    background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+    border-left: 10px solid #5CB85C;
+}
+.theme-haas .btn-drilling {
+    background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+    border-left: 10px solid #0275d8;
+}
+.theme-haas .btn-cutoff {
+    background: linear-gradient(135deg, #ffffff 0%, #dcdcdc 100%);
+    border-left: 10px solid #292b2c;
+    color: #000;
+}
+
+
+/* --- THEME: FMS (Blue/Red/White) --- */
+.theme-fms .op-btn {
+    border-radius: 15px; /* Softer */
+    border: 2px solid #fff;
+}
+.theme-fms .btn-turning { background: #001F60; }
+.theme-fms .btn-grooving { background: #0044cc; }
+.theme-fms .btn-threading { background: #0066ff; }
+.theme-fms .btn-drilling { background: #3388ff; }
+.theme-fms .btn-cutoff { background: #ED1B24; }
+
+/* Dropdown override for theme buttons */
+.btn-group, .dropdown {
+    width: 100%;
+    height: 100%;
+}
+/* Ensure dropdown toggle looks like the button */
+.op-btn.dropdown-toggle {
+    width: 100%;
+    height: 100%;
+}
+
