@@ -3,7 +3,8 @@ from aiogram.filters import Command
 from aiogram.types import (
     InlineKeyboardMarkup, InlineKeyboardButton,
     LabeledPrice, PreCheckoutQuery, Message,
-    ReplyKeyboardMarkup, KeyboardButton, FSInputFile
+    ReplyKeyboardMarkup, KeyboardButton, FSInputFile,
+    MenuButtonWebApp, WebAppInfo
 )
 from aiogram.enums import ParseMode
 from aiogram.fsm.context import FSMContext
@@ -580,6 +581,14 @@ async def setup_bot_commands(bot: Bot):
         BotCommand(command="help", description="❓ Помощь"),
     ]
     await bot.set_my_commands(commands, scope=BotCommandScopeDefault())
+
+    # Set the persistent Menu Button to open the Web App
+    await bot.set_chat_menu_button(
+        menu_button=MenuButtonWebApp(
+            text="🚀 Приложение",
+            web_app=WebAppInfo(url=APP_URL)
+        )
+    )
 
 async def main():
     init_db()
