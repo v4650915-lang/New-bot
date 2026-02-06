@@ -54,7 +54,7 @@ def get_main_keyboard():
         [InlineKeyboardButton(text="👤 Мой профиль", callback_data="profile")],
         [InlineKeyboardButton(text="🎟 Ввести промокод", callback_data="enter_promo")],
         [InlineKeyboardButton(text="🚀 Доступ к приложению", callback_data="access_app")],
-        [InlineKeyboardButton(text="💡 Предложить доработку", callback_data="feedback")],
+        [InlineKeyboardButton(text="💡 Предложить доработку", url=FEEDBACK_URL)],
         [InlineKeyboardButton(text="❓ Помощь", url=f"tg://user?id={ADMIN_IDS[0]}" if ADMIN_IDS else "https://t.me/telegram")],
     ])
 
@@ -269,9 +269,10 @@ async def process_successful_payment(message: Message):
 
 @dp.callback_query(F.data == "access_app")
 async def access_app(callback: types.CallbackQuery):
-    if has_active_subscription(callback.from_user.id):
+    # Разрешаем доступ если есть подписка ИЛИ если это админ
+    if has_active_subscription(callback.from_user.id) or callback.from_user.id in ADMIN_IDS:
         await callback.message.edit_text(
-            "✅ У вас есть активная подписка!\n\n"
+            "✅ Доступ разрешен!\n\n"
             "Нажмите кнопку ниже, чтобы открыть приложение:",
             reply_markup=get_app_keyboard()
         )
@@ -282,27 +283,74 @@ async def access_app(callback: types.CallbackQuery):
         )
     await callback.answer()
 
+
+# --- Feedback Logic ---
+
 @dp.callback_query(F.data == "feedback")
-async def show_feedback(callback: types.CallbackQuery):
-    """Кнопка 'Предложить доработку' - открывает сайт с формой обратной связи"""
-    feedback_text = """
-💡 <b>Предложить доработку</b>
-
-Откройте форму обратной связи на нашем сайте, чтобы:
-• Предложить новую функцию
-• Сообщить о проблеме
-• Поделиться идеей улучшения
-
-Ваше мнение важно для нас! 🚀
-"""
-    
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📝 Открыть форму", url=FEEDBACK_URL)],
-        [InlineKeyboardButton(text="« Назад", callback_data="back_main")]
-    ])
-    
-    await callback.message.edit_text(feedback_text, reply_markup=keyboard, parse_mode=ParseMode.HTML)
+async def enter_feedback_callback(callback: types.CallbackQuery, state: FSMContext):
+    await callback.message.edit_text(
+        "💡 <b>Предложение по доработке</b>\n\n"
+        "Напишите вашу идею, пожелание или опишите проблему. "
+        "Я передам ваше соообщение разработчику.\n\n"
+        "<i>Отправьте текст сообщения:</i>",
+        reply_markup=get_back_keyboard(),
+        parse_mode=ParseMode.HTML
+    )
+    # Save the id of the message to edit it later
+    await state.update_data(menu_message_id=callback.message.message_id)
+    await state.set_state(FeedbackState.waiting_for_feedback)
     await callback.answer()
+
+@dp.message(FeedbackState.waiting_for_feedback)
+async def process_feedback_input(message: Message, state: FSMContext):
+    feedback_text = message.text
+    user = message.from_user
+    username = f"@{user.username}" if user.username else f"ID: {user.id}"
+    full_name = user.full_name or "Unknown"
+
+    data = await state.get_data()
+    menu_message_id = data.get("menu_message_id")
+    
+    # Delete the user's message to keep chat clean
+    try:
+        await message.delete()
+    except:
+        pass
+    
+    # Send to admins
+    admin_notification = (
+        f"📩 <b>НОВЫЙ ОТЗЫВ/ПРЕДЛОЖЕНИЕ</b>\n"
+        f"👤 От: {full_name} ({username})\n"
+        f"🆔 ID: <code>{user.id}</code>\n\n"
+        f"📝 <b>Текст:</b>\n{feedback_text}"
+    )
+
+    for admin_id in ADMIN_IDS:
+        try:
+            await bot.send_message(chat_id=admin_id, text=admin_notification, parse_mode=ParseMode.HTML)
+        except Exception as e:
+            logging.error(f"Failed to send feedback to admin {admin_id}: {e}")
+
+    # Confirmation to user
+    response_text = (
+        "✅ <b>Спасибо! Ваше сообщение отправлено.</b>\n\n"
+        "Разработчк рассмотрит ваше предложение."
+    )
+
+    try:
+        reply_markup = get_main_keyboard()
+        await bot.edit_message_text(
+            chat_id=message.chat.id,
+            message_id=menu_message_id,
+            text=response_text,
+            reply_markup=reply_markup,
+            parse_mode=ParseMode.HTML
+        )
+    except Exception:
+        await message.answer(response_text, reply_markup=get_main_keyboard(), parse_mode=ParseMode.HTML)
+    
+    await state.clear()
+
 
 @dp.callback_query(F.data == "help")
 async def show_help(callback: types.CallbackQuery):
@@ -541,70 +589,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-# --- Feedback Logic ---
-
-@dp.callback_query(F.data == "feedback")
-async def enter_feedback_callback(callback: types.CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(
-        "💡 <b>Предложение по доработке</b>\n\n"
-        "Напишите вашу идею, пожелание или опишите проблему. "
-        "Я передам ваше соообщение разработчику.\n\n"
-        "<i>Отправьте текст сообщения:</i>",
-        reply_markup=get_back_keyboard(),
-        parse_mode=ParseMode.HTML
-    )
-    # Save the id of the message to edit it later
-    await state.update_data(menu_message_id=callback.message.message_id)
-    await state.set_state(FeedbackState.waiting_for_feedback)
-    await callback.answer()
-
-@dp.message(FeedbackState.waiting_for_feedback)
-async def process_feedback_input(message: Message, state: FSMContext):
-    feedback_text = message.text
-    user = message.from_user
-    username = f"@{user.username}" if user.username else f"ID: {user.id}"
-    full_name = user.full_name or "Unknown"
-
-    data = await state.get_data()
-    menu_message_id = data.get("menu_message_id")
-    
-    # Delete the user's message to keep chat clean
-    try:
-        await message.delete()
-    except:
-        pass
-    
-    # Send to admins
-    admin_notification = (
-        f"📩 <b>НОВЫЙ ОТЗЫВ/ПРЕДЛОЖЕНИЕ</b>\n"
-        f"👤 От: {full_name} ({username})\n"
-        f"🆔 ID: <code>{user.id}</code>\n\n"
-        f"📝 <b>Текст:</b>\n{feedback_text}"
-    )
-
-    for admin_id in ADMIN_IDS:
-        try:
-            await bot.send_message(chat_id=admin_id, text=admin_notification, parse_mode=ParseMode.HTML)
-        except Exception as e:
-            logging.error(f"Failed to send feedback to admin {admin_id}: {e}")
-
-    # Confirmation to user
-    response_text = (
-        "✅ <b>Спасибо! Ваше сообщение отправлено.</b>\n\n"
-        "Разработчк рассмотрит ваше предложение."
-    )
-
-    try:
-        reply_markup = get_main_keyboard()
-        await bot.edit_message_text(
-            chat_id=message.chat.id,
-            message_id=menu_message_id,
-            text=response_text,
-            reply_markup=reply_markup,
-            parse_mode=ParseMode.HTML
-        )
-    except Exception:
-        await message.answer(response_text, reply_markup=get_main_keyboard(), parse_mode=ParseMode.HTML)
-    
-    await state.clear()
