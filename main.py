@@ -278,9 +278,9 @@ async def access_app(callback: types.CallbackQuery):
             reply_markup=get_app_keyboard()
         )
     else:
-        await callback.message.edit_text(
-            MESSAGES["no_subscription"] + "\n\nНажмите «Купить подписку», чтобы получить доступ.",
-            reply_markup=get_main_keyboard()
+        await callback.answer(
+            "⛔️ У вас нет активной подписки!\n\nНажмите «Купить подписку» в меню.",
+            show_alert=True
         )
     await callback.answer()
 
